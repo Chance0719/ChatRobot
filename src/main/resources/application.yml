@@ -1,0 +1,35 @@
+server:
+  port: 18080
+
+spring:
+  mvc:
+    # 静态目录
+    static-path-pattern: /static/**
+  web:
+    # 开启MD5版本控制
+    resources:
+      chain:
+        strategy:
+          content:
+            enabled: true
+            paths: /**
+openai:
+  # 默认的Token长度
+  max_tokens: ${MAX_TOKENS:512}
+  # 尝试将值设为 0.9 以获得更有创意的回复，将值设为 0 以获得具有明确答案的回复
+  temperature: ${TEMPERATURE:0.6}
+  # 默认的AI模型，gpt-3.5-turbo or gpt-3.5-turbo-0301	，区别：https://platform.openai.com/docs/models/gpt-3-5
+  model: gpt-3.5-turbo
+  # 多个Key用,分割
+  keys: ${KEYS:}
+  # 综合问答API
+  openai_api: https://api.openai.com/v1/chat/completions
+  # 图片问答API
+  image_api: https://api.openai.com/v1/images/generations
+  # 提示信息
+  tips: ${TIPS:ChatRobot 是一个超强的人工智能语言模型，它会创作、写论文、答辩、编程，绘画等(基于openai接口开发)}
+  # ${名称:值} 格式以便于在环境变量中配置，默认只需修改值即可
+
+baidu:
+  # 百度统计的API， 取 xxxx 填入即可 hm.src = "https://hm.baidu.com/hm.js?xxxx";
+  tong_ji_token: ${BD_TONG_JI_TOKEN:}
