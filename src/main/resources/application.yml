@@ -13,6 +13,9 @@ spring:
           content:
             enabled: true
             paths: /**
+  profiles:
+    active: druid
+
 openai:
   # 默认的Token长度
   max_tokens: ${MAX_TOKENS:512}
@@ -33,3 +36,11 @@ openai:
 baidu:
   # 百度统计的API， 取 xxxx 填入即可 hm.src = "https://hm.baidu.com/hm.js?xxxx";
   tong_ji_token: ${BD_TONG_JI_TOKEN:}
+
+
+# MyBatis配置
+mybatis:
+  # 搜索指定包别名
+#  typeAliasesPackage: com.example.**.domain
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapper-locations: classpath:db/mappers/*Mapper.xml

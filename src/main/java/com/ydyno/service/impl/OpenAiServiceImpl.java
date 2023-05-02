@@ -23,12 +23,16 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
 import com.ydyno.config.OpenAiConfig;
+import com.ydyno.dao.ChatInfoMgtMapper;
 import com.ydyno.service.WebSocketServer;
+import com.ydyno.service.dto.ChatInfoDTO;
 import com.ydyno.service.dto.OpenAiRequest;
 import com.ydyno.service.OpenAiService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +49,9 @@ import java.util.regex.Pattern;
 @Service
 @AllArgsConstructor
 public class OpenAiServiceImpl implements OpenAiService {
+
+    @Resource
+    private ChatInfoMgtMapper chatInfoMgtDAO;
 
     private final OpenAiConfig openAiConfig;
 
@@ -89,6 +96,10 @@ public class OpenAiServiceImpl implements OpenAiService {
      * @param webSocketServer /
      */
     private void textQuiz(Integer maxTokens, OpenAiRequest openAiRequest, String apikey, WebSocketServer webSocketServer) throws Exception {
+        ChatInfoDTO chatInfoDTO = new ChatInfoDTO();
+        chatInfoDTO.setSid(webSocketServer.getSid());
+        chatInfoDTO.setApikey(apikey);
+        chatInfoDTO.setModel(openAiConfig.getModel());
         // 构建对话参数
         List<Map<String, String>> messages = new ArrayList<>();
         // 如果是连续对话，逐条添加对话内容
@@ -117,7 +128,7 @@ public class OpenAiServiceImpl implements OpenAiService {
             );
             messages.add(userMessage);
         }
-
+        chatInfoDTO.setMessage(messages.toString());
         // 构建请求参数
         Map<String, Object> params = MapUtil.ofEntries(
                 MapUtil.entry("stream", true),
@@ -145,6 +156,7 @@ public class OpenAiServiceImpl implements OpenAiService {
         boolean flag = false;
         boolean printErrorMsg = false;
         StringBuilder errMsg = new StringBuilder();
+        StringBuilder msg = new StringBuilder();
         while((line = reader.readLine()) != null){
             String msgResult = UnicodeUtil.toString(line);
             // 正则匹配错误信息
@@ -169,10 +181,13 @@ public class OpenAiServiceImpl implements OpenAiService {
                 }
                 // 发送信息
                 if(flag) {
+                    msg.append(data);
                     webSocketServer.sendMessage(data);
                 }
             }
         }
+        chatInfoDTO.setAnswer(msg.toString());
+        chatInfoMgtDAO.insertChatInfo(chatInfoDTO);
         // 关闭流
         reader.close();
         // 如果出错，抛出异常

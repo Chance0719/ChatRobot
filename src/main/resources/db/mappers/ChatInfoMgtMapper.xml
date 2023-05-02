@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydyno.dao.ChatInfoMgtMapper">
+
+
+    <insert id="insertChatInfo" parameterType="com.ydyno.service.dto.ChatInfoDTO">
+        insert into chat_message_info
+            (id, sid, apikey, model, message, answer)
+        values
+            (null, #{sid,jdbcType=VARCHAR}, #{apikey,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR},
+             #{message,jdbcType=VARCHAR}, #{answer,jdbcType=VARCHAR})
+    </insert>
+</mapper>

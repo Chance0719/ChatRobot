@@ -49,6 +49,14 @@ public class WebSocketServer {
     //接收sid
     private String sid = "";
 
+    public String getSid() {
+        return sid;
+    }
+
+    public void setSid(String sid) {
+        this.sid = sid;
+    }
+
     /**
      * 连接建立成功调用的方法
      */
