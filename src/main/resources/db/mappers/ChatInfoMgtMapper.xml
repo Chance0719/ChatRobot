@@ -7,9 +7,9 @@
 
     <insert id="insertChatInfo" parameterType="com.ydyno.service.dto.ChatInfoDTO">
         insert into chat_message_info
-            (id, sid, apikey, model, message, answer)
+            (id, sid, apikey, model, message, answer, image)
         values
             (null, #{sid,jdbcType=VARCHAR}, #{apikey,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR},
-             #{message,jdbcType=VARCHAR}, #{answer,jdbcType=VARCHAR})
+             #{message,jdbcType=VARCHAR}, #{answer,jdbcType=VARCHAR}, #{image,jdbcType=BLOB})
     </insert>
 </mapper>

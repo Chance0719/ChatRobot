@@ -30,10 +30,13 @@ import com.ydyno.service.dto.OpenAiRequest;
 import com.ydyno.service.OpenAiService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -208,6 +211,10 @@ public class OpenAiServiceImpl implements OpenAiService {
      * @param webSocketServer /
      */
     private void imageQuiz(OpenAiRequest openAiDto, String apikey, WebSocketServer webSocketServer) throws IOException {
+        ChatInfoDTO chatInfoDTO = new ChatInfoDTO();
+        chatInfoDTO.setSid(webSocketServer.getSid());
+        chatInfoDTO.setApikey(apikey);
+        chatInfoDTO.setMessage(openAiDto.getText());
         // 请求参数
         Map<String, Object> params = MapUtil.ofEntries(
                 MapUtil.entry("prompt", openAiDto.getText()),
@@ -223,7 +230,22 @@ public class OpenAiServiceImpl implements OpenAiService {
         Pattern p = Pattern.compile("\"url\": \"(.*?)\"");
         Matcher m = p.matcher(result);
         if (m.find()){
-            webSocketServer.sendMessage(m.group(1));
+            String url = m.group(1);
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setReadTimeout(5000);
+                connection.setConnectTimeout(5000);
+                connection.setRequestMethod("GET");
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStream inputStream = connection.getInputStream();
+                    byte[] bytes = IOUtils.toByteArray(inputStream);
+                    chatInfoDTO.setImage(bytes);
+                }
+            } catch (IOException e) {
+                log.info("获取网络图片出现异常，图片路径为：" + url);
+            }
+            chatInfoMgtDAO.insertChatInfo(chatInfoDTO);
+            webSocketServer.sendMessage(url);
         } else {
             webSocketServer.sendMessage("图片生成失败！");
         }

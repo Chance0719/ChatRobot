@@ -9,4 +9,5 @@ public class ChatInfoDTO {
     private String model;
     private String message;
     private String answer;
+    private byte[] image;
 }
