@@ -200,7 +200,7 @@ public class OpenAiServiceImpl implements OpenAiService {
                 throw new RuntimeException(m.group(1));
             }
             throw new RuntimeException("请求ChatGPT官方服务出错，请稍后再试");
-        };
+        }
     }
 
     /**
@@ -239,6 +239,7 @@ public class OpenAiServiceImpl implements OpenAiService {
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     InputStream inputStream = connection.getInputStream();
                     byte[] bytes = IOUtils.toByteArray(inputStream);
+                    inputStream.close();
                     chatInfoDTO.setImage(bytes);
                 }
             } catch (IOException e) {
