@@ -25,6 +25,7 @@ import cn.hutool.json.JSONUtil;
 import com.ydyno.config.OpenAiConfig;
 import com.ydyno.dao.ChatInfoMgtMapper;
 import com.ydyno.service.WebSocketServer;
+import com.ydyno.service.dto.ApiKeyDTO;
 import com.ydyno.service.dto.ChatInfoDTO;
 import com.ydyno.service.dto.OpenAiRequest;
 import com.ydyno.service.OpenAiService;
@@ -40,6 +41,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,8 +62,15 @@ public class OpenAiServiceImpl implements OpenAiService {
 
     @Override
     public void communicate(OpenAiRequest openAiDto, WebSocketServer webSocketServer) throws Exception {
-        // 获取apikey
-        String apikey = openAiDto.getApikey();
+//        // 获取apikey
+//        String apikey = openAiDto.getApikey();
+        // 从数据库中获取当前连接用户传入的apikey
+        List<String> apikeys = chatInfoMgtDAO.queryApiKeysBySid(webSocketServer.getSid());
+        String apikey = null;
+        if (apikeys != null && apikeys.size() > 0) {
+            Random rand = new Random();
+            apikey = apikeys.get(rand.nextInt(apikeys.size()));
+        }
         // 最大返回字符数, max_tokens不能超过模型的上下文长度。大多数模型的上下文长度为 2048 个标记
         int maxTokens = 2048;
         // 如果没有传入apikey，则使用配置文件中的
@@ -88,6 +97,21 @@ public class OpenAiServiceImpl implements OpenAiService {
             e.printStackTrace();
             webSocketServer.sendMessage("出错了：" + e.getMessage());
         }
+    }
+
+    @Override
+    public void saveApikey(ApiKeyDTO apiKeyDTO) {
+        // 如果存在直接更新sid
+        List<String> strings = chatInfoMgtDAO.queryApiKeysByApiKey(apiKeyDTO.getApikey());
+        log.info("查询");
+        if (strings != null && strings.size() > 0) {
+            chatInfoMgtDAO.updateApiKeysInfo(apiKeyDTO);
+            log.info("更新");
+        } else {
+            chatInfoMgtDAO.insertApikey(apiKeyDTO);
+            log.info("插入");
+        }
+        return;
     }
 
     /**

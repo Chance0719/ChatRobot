@@ -2,7 +2,7 @@ let keepText = "";
 const apiUrl = "/api/openai";
 const uuid = getUuid();
 let number = new Date().getSeconds();
-const heartbeatMsg = "this is the heartbeat message"
+const heartbeatMsg = "this is the heartbeat message";
 
 // WS连接地址
 const wsServer= (window.location.protocol+'//' + window.location.host + "/api/ws/" + uuid)
@@ -104,6 +104,10 @@ function keyclick() {
         }
         return;
     }
+    const data = JSON.stringify({
+        sid: uuid, apikey: apikey, type: 'saveApikey'
+    })
+    socket.send(data)
     toast({ time: 1000, msg: "APIKEY设置成功！" });
 }
 

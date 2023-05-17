@@ -17,6 +17,7 @@ package com.ydyno.service;
 
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.json.JSONUtil;
+import com.ydyno.service.dto.ApiKeyDTO;
 import com.ydyno.service.dto.OpenAiRequest;
 import com.ydyno.utils.SpringContextHolder;
 import org.slf4j.Logger;
@@ -93,11 +94,21 @@ public class WebSocketServer {
      */
     @OnMessage
     public void onMessage(String message) {
-        OpenAiRequest openAiRequest = JSONUtil.toBean(message, OpenAiRequest.class);
-        try {
-            SpringContextHolder.getBean(OpenAiService.class).communicate(openAiRequest, this);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        // 看是否是保存apikey的消息
+        if (message.contains("saveApikey")) {
+            ApiKeyDTO apiKeyDTO = JSONUtil.toBean(message, ApiKeyDTO.class);
+            try {
+                SpringContextHolder.getBean(OpenAiService.class).saveApikey(apiKeyDTO);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            OpenAiRequest openAiRequest = JSONUtil.toBean(message, OpenAiRequest.class);
+            try {
+                SpringContextHolder.getBean(OpenAiService.class).communicate(openAiRequest, this);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

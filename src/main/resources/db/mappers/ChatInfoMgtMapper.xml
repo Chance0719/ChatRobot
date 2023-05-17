@@ -12,4 +12,23 @@
             (null, #{sid,jdbcType=VARCHAR}, #{apikey,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR},
              #{message,jdbcType=VARCHAR}, #{answer,jdbcType=VARCHAR}, #{image,jdbcType=BLOB})
     </insert>
+    <insert id="insertApikey" parameterType="com.ydyno.service.dto.ApiKeyDTO">
+        insert into apikeys
+            (sid, apikey)
+        values
+            (#{sid,jdbcType=VARCHAR}, #{apikey,jdbcType=VARCHAR})
+    </insert>
+    <update id="updateApiKeysInfo" parameterType="com.ydyno.service.dto.ApiKeyDTO">
+        update apikeys
+        set sid = #{sid,jdbcType=VARCHAR}
+        where apikey = #{apikey,jdbcType=VARCHAR}
+    </update>
+    <select id="queryApiKeysBySid" resultType="java.lang.String">
+        select apikey from apikeys
+        where sid = #{sid,jdbcType=VARCHAR}
+    </select>
+    <select id="queryApiKeysByApiKey" resultType="java.lang.String">
+        select apikey from apikeys
+        where apikey = #{apikey,jdbcType=VARCHAR}
+    </select>
 </mapper>

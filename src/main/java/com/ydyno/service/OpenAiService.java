@@ -14,6 +14,7 @@
  *  limitations under the License.
  */
 package com.ydyno.service;
+import com.ydyno.service.dto.ApiKeyDTO;
 import com.ydyno.service.dto.OpenAiRequest;
 
 /**
@@ -30,4 +31,6 @@ public interface OpenAiService {
      * @param webSocketServer /
      */
     void communicate(OpenAiRequest openAiDto, WebSocketServer webSocketServer) throws Exception;
+
+    void saveApikey(ApiKeyDTO apiKeyDTO);
 }
