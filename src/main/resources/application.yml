@@ -30,7 +30,7 @@ openai:
   # 图片问答API
   image_api: https://api.openai.com/v1/images/generations
   # 提示信息
-  tips: ${TIPS:ChatRobot 是一个超强的人工智能语言模型，它会创作、写论文、答辩、编程，绘画等(基于openai接口开发)}
+  tips: ${TIPS:ChatRobot 是一个超强的人工智能语言模型，它会创作、写论文、答辩、编程，绘画等(基于openai接口开发)。一次会话支持添加多个key轮询调用(多个key请依次添加，key仅在当前会话有效)}
   # ${名称:值} 格式以便于在环境变量中配置，默认只需修改值即可
 
 baidu:
